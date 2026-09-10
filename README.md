@@ -56,3 +56,14 @@ python3 scripts/verify_stopping_condition.py --sprint my-sprint
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+---
+
+## Acknowledgements
+
+This repo is a synthesis of two pieces of work that deserve credit in full:
+
+- **Sam Chan** — [*Stop cooking. Start writing recipes.*](https://samchan.ca/musings/graph-engineering-for-non-engineers) — supplied the graph-engineering frame and the "stiff peaks" stopping condition.
+- **Chris Hobbs** — [`fully-completely`](https://github.com/chrishobbsrocks/fully-completely) — supplied the state machine, role separation, and the `--user-said` authorization gate.
+
+See [CREDITS.md](CREDITS.md) for the full lineage.
