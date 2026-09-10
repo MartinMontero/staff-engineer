@@ -1,57 +1,72 @@
 # Staff Engineer
 
-A guardrail-enforced state machine that turns a non-developer into a Staff
-Engineer — by refusing to let LLM agents skip verification, and refusing to
-let the human skip accountability.
+A system that lets a non-developer manage a team of AI agents the way a
+senior engineer manages a team of developers — by defining what "done"
+looks like, approving the work plan, reviewing proof that it worked, and
+signing off on the result. The system enforces these steps mechanically:
+it will refuse to skip any of them, and that refusal is the point.
 
-## Core rule
+## The core rule
 
-**Done is a verifiable state, not a judgment call.** Every sprint ends with
-a machine-checkable stopping condition, executed for real, with hashed
-evidence and explicit human authorization. No evidence, no closure.
+**"Done" is something the machine can verify, not something anyone gets
+to claim.** Every piece of work ends with a test that runs automatically,
+produces evidence, and requires your explicit sign-off. No evidence, no
+closure.
 
-## Sprint lifecycle
+## How a sprint moves through the system
+
+A sprint is a single piece of work — one goal, from start to finish. It
+moves through a fixed sequence of stages, and several of those stages are
+mandatory checkpoints (called gates) that cannot be skipped:
 
 ```
-BACKLOG → PLANNING → DESIGN_REVIEW → EXECUTION → QA1 → LIVE_QA → USER_REVIEW → COMPLETE
-                         ↑____________|___________|_____|__________|
-                         (any gate may send the sprint back to EXECUTION;
-                          USER_REVIEW may also send it back to PLANNING)
+BACKLOG → PLANNING → DESIGN REVIEW → EXECUTION → QA AUDIT → LIVE TEST → YOUR REVIEW → COMPLETE
+                         ↑____________|____________|__________|____________|
+                         (any gate can send the work back for fixes;
+                          your review can also send it back to planning)
 ```
 
-- **Gates** (QA1, Live QA, User Review) cannot be skipped. `allow_skip: false`.
-- Only **Pipeman** touches git; only the **human** runs `/sprint-complete`.
-- Every transition is recorded in `sprints/<id>/state.json` with actor and
-  timestamp.
+Three things are always true:
 
-## Quickstart
+- The checkpoints (QA Audit, Live Test, Your Review) cannot be skipped or
+  bypassed. The system enforces this.
+- Only the version-control agent (Pipeman) touches file history. Only you
+  can close a sprint.
+- Every stage change is recorded with who did it and when, so there is
+  always a trail.
+
+## Getting started
 
 ```bash
 pip install pyyaml
 
-# 1. Initialize a sprint
+# 1. Create a new sprint
 /sprint-init my-sprint
 
-# 2. Write your machine-checkable stopping condition
+# 2. Write your definition of done (what the machine will test for)
 $EDITOR sprints/my-sprint/stopping-condition.md
 
-# 3. Plan, approve the graph, execute, review evidence, close
+# 3. Plan it, run it, review the evidence, close it
 /sprint-plan my-sprint
 /sprint-execute my-sprint
 /sprint-complete my-sprint --user-said "I reviewed both reports and accept the result."
 
-# Anytime: check the guardrails and a sprint's stopping condition
+# Anytime: check that the rules are intact and a sprint's test passes
 npm run guardrail
 python3 scripts/verify_stopping_condition.py --sprint my-sprint
 ```
 
-## Docs
+## Documentation
 
-- [docs/NON-DEV-QUICKSTART.md](docs/NON-DEV-QUICKSTART.md) — start here if you don't code
-- [docs/STAFF-ENGINEER-PLAYBOOK.md](docs/STAFF-ENGINEER-PLAYBOOK.md) — your four duties
-- [docs/GRAPH-ENGINEERING.md](docs/GRAPH-ENGINEERING.md) — why task graphs beat prompts
-- [docs/SECURITY-MODEL.md](docs/SECURITY-MODEL.md) — threat model and non-negotiable rules
-- [docs/GLOSSARY.md](docs/GLOSSARY.md) — terms
+- [docs/NON-DEV-QUICKSTART.md](docs/NON-DEV-QUICKSTART.md) — start here
+  if you don't code
+- [docs/STAFF-ENGINEER-PLAYBOOK.md](docs/STAFF-ENGINEER-PLAYBOOK.md) —
+  your four responsibilities
+- [docs/GRAPH-ENGINEERING.md](docs/GRAPH-ENGINEERING.md) — why a work
+  plan with dependencies beats a list of instructions
+- [docs/SECURITY-MODEL.md](docs/SECURITY-MODEL.md) — what the system
+  protects you from, and the rules that make it work
+- [docs/GLOSSARY.md](docs/GLOSSARY.md) — terms used in this repo
 
 ## License
 
@@ -63,7 +78,13 @@ MIT — see [LICENSE](LICENSE).
 
 This repo is a synthesis of two pieces of work that deserve credit in full:
 
-- **Sam Chan** — [*Stop cooking. Start writing recipes.*](https://samchan.ca/musings/graph-engineering-for-non-engineers) — supplied the graph-engineering frame and the "stiff peaks" stopping condition.
-- **Chris Hobbs** — [`fully-completely`](https://github.com/chrishobbsrocks/fully-completely) — supplied the state machine, role separation, and the `--user-said` authorization gate.
+- **Sam Chan** —
+  [*Stop cooking. Start writing recipes.*](https://samchan.ca/musings/graph-engineering-for-non-engineers)
+  — supplied the graph-engineering frame and the "stiff peaks" stopping
+  condition.
+- **Chris Hobbs** —
+  [`fully-completely`](https://github.com/chrishobbsrocks/fully-completely)
+  — supplied the state machine, role separation, and the `--user-said`
+  authorization gate.
 
 See [CREDITS.md](CREDITS.md) for the full lineage.

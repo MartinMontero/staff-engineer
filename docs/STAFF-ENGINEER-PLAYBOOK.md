@@ -1,44 +1,102 @@
 # Staff Engineer Playbook
 
-You are the Staff Engineer. The agents work for you; the gates protect you
-from them. You have exactly four duties. Do them well and the system cannot
-ship garbage without your signature.
+You are the Staff Engineer. The AI agents work for you. The checkpoints
+protect you from them. You have exactly four responsibilities, and if you
+do them well, the system cannot ship anything without your informed
+approval.
 
-## Duty 1: Define the stopping condition
+## Responsibility 1: Define what "done" looks like
 
-Before any planning, write a machine-checkable command that exits 0 when the
-sprint's goal is met. This is the hardest and most important thing you will
-do. If you cannot write the command, you do not yet know what you are
-building.
+Before any planning begins, write a command that the system can run to
+test whether the sprint's goal has been achieved. The command succeeds
+(returns a result code of zero) when the goal is met and fails (returns
+anything else) when it is not.
 
-## Duty 2: Approve the graph
+This is the hardest and most important thing you will do.
 
-At DESIGN_REVIEW, read the Architect's recommended DAG. Ask: does every node
-matter? Is anything missing? Is anything unverifiable? Execution does not
-start until you approve. An approved bad graph is your fault, not the
-agents'.
+A good stopping condition is specific, testable, and leaves no room for
+debate. "The application loads" is too vague. "The health endpoint at
+localhost:3000/health returns a successful response" is testable — either
+it does or it doesn't.
 
-## Duty 3: Review the evidence
+If you cannot write the command, you do not yet know what you are
+building. That is useful information. Stop, clarify the goal, and then
+come back to this step.
 
-At USER_REVIEW, read both reports: `evidence/qa1-report.md` (static audit)
-and `evidence/live-qa-report.md` (the stopping condition actually executed).
-Check the exit code, skim the output, and verify the hashes. The reports are
-short on purpose — read them.
+## Responsibility 2: Approve the work plan
 
-## Duty 4: Authorize closure explicitly
+At the Design Review stage, the Architect agent presents a structured work
+plan — a set of tasks arranged by dependency, showing what must happen
+first and what can proceed in parallel. The Architect shows you three
+options with trade-offs and recommends one.
 
-Close with `/sprint-complete <id> --user-said "..."` and a real sentence
-stating that you reviewed the evidence and accept the result. Empty or
-rubber-stamp quotes defeat the entire system.
+Read it. Ask yourself three questions:
 
-## Anti-patterns
+1. Does every task in the plan actually matter for the goal?
+2. Is anything missing that the goal requires?
+3. Can every task be verified — is there a way to check that it worked?
 
-- **"It looks done, just close it."** Done is a verifiable state, not a
-  judgment call. No evidence, no closure.
-- **Skipping the stopping condition** ("we'll know it when we see it"). You
-  won't. Write the command.
-- **Approving graphs unread.** The graph is the contract; read it.
-- **Letting an agent run `/sprint-complete`.** Human-only. Always.
-- **Treating a QA failure as a nuisance** instead of a signal. The gate
-  caught something. Send it back to EXECUTION and fix the graph if failures
-  repeat.
+Execution does not start until you approve the plan. If you approve a bad
+plan, the resulting problems are yours, not the agents'. The plan is the
+contract between you and the system. Take it seriously.
+
+## Responsibility 3: Review the evidence
+
+At the Your Review stage, two short reports are waiting for you:
+
+- `evidence/qa1-report.md` — a checklist audit. Did the agents build what
+  the plan said? Are there tests? Are there security violations? Every
+  item must pass. A partial pass is a failure.
+
+- `evidence/live-qa-report.md` — the result of actually running your
+  stopping condition. Shows the exact command, its output, and the result
+  code. Zero means it succeeded. Anything else means it failed.
+
+Check the result code. Skim the output. Verify the integrity hashes (a
+unique fingerprint for each report, stored in file history, that proves
+the reports have not been altered after the fact).
+
+The reports are short on purpose. Read them.
+
+## Responsibility 4: Close the sprint with an explicit authorization
+
+Close with `/sprint-complete <id> --user-said "..."` and write a real
+sentence stating that you reviewed the evidence and accept the result.
+
+The `--user-said` flag is your signature. The system refuses to close
+if either quality report is missing, if either shows a failure, or if
+your quote is empty. This is not a checkbox — it is the mechanism that
+keeps a human being accountable for every piece of work that ships.
+
+An empty or pro-forma quote defeats the entire purpose. If you find
+yourself writing "looks good" without having read the reports, the system
+is no longer protecting you.
+
+## Patterns that break the system
+
+These are the ways people defeat their own guardrails. Recognise them
+and refuse to do them.
+
+- **"It looks done, just close it."** "Done" is a verifiable state, not
+  a feeling. The stopping condition exists specifically so that no one —
+  including you — has to guess. If it passes, it is done. If it does not,
+  it is not.
+
+- **Skipping the stopping condition.** "We'll know it when we see it" is
+  a recipe for agents declaring victory on their own terms. Write the
+  command. If you cannot write it, the goal is not clear enough yet.
+
+- **Approving the plan without reading it.** The plan is a contract. If
+  you approve it unread, you are signing a blank cheque. The agents will
+  build exactly what the plan says — and if the plan is wrong, the result
+  will be wrong.
+
+- **Letting an agent close the sprint.** The `/sprint-complete` command
+  is restricted to humans for a reason. Technical readiness and human
+  authorization are separate gates. Both quality checkpoints passing means
+  the code works; it does not mean you have decided to ship it.
+
+- **Treating a quality failure as a nuisance.** When a checkpoint catches
+  something, that is the system working. Send the work back to Execution.
+  If the same failure keeps recurring, the work plan needs revising — send
+  it back to Planning.
