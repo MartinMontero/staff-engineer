@@ -1,0 +1,86 @@
+version: 1
+
+# Capability matrix per role. Anything not listed under "can" is forbidden.
+# The guardrail scripts and the Master Controller enforce these rules.
+roles:
+  master-controller:
+    can:
+      - read sprints/**
+      - write sprints/*/state.json
+      - invoke agents
+    cannot:
+      - write src/**
+      - git push
+      - read secrets
+  architect:
+    can:
+      - read sprints/**
+      - read docs/**
+      - write sprints/*/graph.yaml
+    cannot:
+      - write src/**
+      - run git
+      - read secrets
+  dev-team-1:
+    can:
+      - read sprints/*/graph.yaml
+      - read src/**
+      - write src/**
+      - write tests/**
+      - run build/test
+    cannot:
+      - git push
+      - read secrets
+      - write .staff-engineer/**
+      - write sprints/**
+  dev-team-2:
+    can:
+      - read sprints/*/graph.yaml
+      - read src/**
+      - write src/** (isolated worktree only)
+      - write tests/** (isolated worktree only)
+      - run build/test
+    cannot:
+      - git push
+      - read secrets
+      - write outside isolated worktree ../wt-<sprint>-dev2
+      - write .staff-engineer/**
+      - write sprints/**
+  pipeman:
+    can:
+      - git branch
+      - git commit
+      - git merge
+      - git rebase
+      - read src/**
+    cannot:
+      - write src/**
+      - force-push main
+      - read secrets
+  qa1-auditor:
+    can:
+      - read src/**
+      - read sprints/**
+      - read requirements
+      - write sprints/*/evidence/qa1-report.md
+    cannot:
+      - write src/**
+      - run git
+      - read secrets
+  live-qa:
+    can:
+      - run tests
+      - run scripts/verify_stopping_condition.py
+      - write sprints/*/evidence/live-qa-report.md
+    cannot:
+      - write src/**
+      - git push
+      - read long-lived secrets
+
+secrets:
+  policy: env-only
+  forbid_patterns:
+    - 'AKIA[0-9A-Z]{16}'
+    - 'sk-[A-Za-z0-9]{20,}'
+    - 'ghp_[A-Za-z0-9]{36}'
+    - '-----BEGIN (RSA|EC|OPENSSH) PRIVATE KEY-----'

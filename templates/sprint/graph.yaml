@@ -1,0 +1,9 @@
+# Task graph for the sprint. The Architect proposes 3 candidates; the
+# approved recommendation replaces this placeholder.
+# A shopping list is not a recipe — nodes must form a DAG with explicit
+# dependencies. See docs/GRAPH-ENGINEERING.md.
+
+sprint: <SPRINT-ID>
+stopping_condition: python3 scripts/verify_stopping_condition.py --sprint <SPRINT-ID>
+nodes: []
+terminal: null

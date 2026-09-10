@@ -1,0 +1,34 @@
+version: 1
+
+project:
+  name: my-project
+  language: typescript
+  default_branch: main
+
+sprints:
+  dir: sprints
+  required_artifacts:
+    - sprint.md
+    - graph.yaml
+    - stopping-condition.md
+    - evidence/qa1-report.md
+    - evidence/live-qa-report.md
+
+agents:
+  model: claude-sonnet-4-6
+  temperature: 0.2
+  max_tokens: 8000
+  isolation:
+    dev_team_2_worktree: true
+    pipeman_owns_git: true
+
+gates:
+  require_qa1_pass: true
+  require_live_qa_pass: true
+  require_user_authorization: true
+  allow_skip: false
+
+evidence:
+  sign: true
+  hash_algorithm: sha256
+  store_in_git: true

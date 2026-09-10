@@ -1,0 +1,19 @@
+initial: BACKLOG
+
+states:
+  BACKLOG:
+    next: [PLANNING]
+  PLANNING:
+    next: [DESIGN_REVIEW]
+  DESIGN_REVIEW:
+    next: [EXECUTION, PLANNING]
+  EXECUTION:
+    next: [QA1]
+  QA1:
+    next: [LIVE_QA, EXECUTION]
+  LIVE_QA:
+    next: [USER_REVIEW, EXECUTION]
+  USER_REVIEW:
+    next: [COMPLETE, EXECUTION, PLANNING]
+  COMPLETE:
+    next: []

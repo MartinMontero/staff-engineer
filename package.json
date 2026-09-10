@@ -1,0 +1,10 @@
+{
+  "name": "staff-engineer",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "guardrail": "python3 scripts/guardrail_check.py",
+    "verify": "python3 scripts/verify_stopping_condition.py"
+  }
+}

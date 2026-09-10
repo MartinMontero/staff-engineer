@@ -1,0 +1,10 @@
+.env
+.env.*
+!.env.example
+node_modules/
+__pycache__/
+*.pyc
+sprints/*/state.json
+!sprints/.gitkeep
+.DS_Store
+Thumbs.db
