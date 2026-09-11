@@ -4,6 +4,10 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 :root{
+  /* Deliberately single-theme: this page commits to the light palette so it
+     reads the same for everyone it gets shared with. color-scheme keeps form
+     controls light even when the surrounding app is in dark mode. */
+  color-scheme:light;
   --paper:#F2F3F1;
   --surface:#FFFFFF;
   --surface-2:#F7F8F6;
@@ -26,25 +30,6 @@
 
   --t-xs:12px; --t-s:13.5px; --t-m:15px; --t-l:16.5px; --t-xl:21px;
 }
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --paper:#141615; --surface:#1B1E1C; --surface-2:#212523; --inset:#262A28;
-    --ink:#E8EBE7; --ink-2:#A9B2AD; --ink-3:#818B86;
-    --rule:#2E3331; --rule-2:#262B29;
-    --accent:#8FA6EE; --accent-soft:#1E2438;
-    --ready:#59BC8C; --ready-soft:#13291F;
-    --refuse:#E08272; --refuse-soft:#2C1815;
-  }
-}
-:root[data-theme="dark"]{
-  --paper:#141615; --surface:#1B1E1C; --surface-2:#212523; --inset:#262A28;
-  --ink:#E8EBE7; --ink-2:#A9B2AD; --ink-3:#818B86;
-  --rule:#2E3331; --rule-2:#262B29;
-  --accent:#8FA6EE; --accent-soft:#1E2438;
-  --ready:#59BC8C; --ready-soft:#13291F;
-  --refuse:#E08272; --refuse-soft:#2C1815;
-}
-
 *{box-sizing:border-box}
 body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:var(--t-m);line-height:1.55;-webkit-font-smoothing:antialiased}
 .wrap{max-width:1100px;margin:0 auto;padding-inline:22px;padding-block:0 72px}
@@ -112,8 +97,6 @@ input[type=text]:focus,textarea:focus{border-color:var(--accent);background:var(
   border:1px solid var(--rule);border-radius:5px;padding:7px 13px;cursor:pointer;line-height:1.35}
 .btn:hover{border-color:var(--ink-3)}
 .btn.solid{background:var(--accent);border-color:var(--accent);color:#fff}
-:root[data-theme="dark"] .btn.solid{color:#141615}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.solid{color:#141615}}
 .btn.quiet{background:transparent;border-color:transparent;color:var(--ink-2);padding:5px 7px}
 .btn.quiet:hover{color:var(--ink);background:var(--surface-2)}
 .btn.sm{font-size:var(--t-xs);padding:5px 10px}
@@ -157,15 +140,19 @@ input[type=text]:focus,textarea:focus{border-color:var(--accent);background:var(
   color:var(--ink-2);border-radius:99px;padding:4px 11px;cursor:pointer}
 .chip:hover{border-color:var(--ink-3)}
 .chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
-:root[data-theme="dark"] .chip[aria-pressed="true"]{color:#141615}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .chip[aria-pressed="true"]{color:#141615}}
 .chip.mute{cursor:default;opacity:.7;border-style:dashed}
 
 /* the map */
-.maphold{border:1px solid var(--rule);border-radius:7px;background:var(--surface-2);overflow-x:auto}
-.map{position:relative;display:flex;gap:56px;padding:20px 22px;min-width:max-content;align-items:flex-start}
-.mcol{display:grid;gap:15px;align-content:start;position:relative;z-index:1}
-.mnode{width:186px;background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:11px 12px;display:grid;gap:4px}
+.maphold{border:1px solid var(--rule);border-radius:7px;background:var(--surface-2);overflow-x:auto;position:relative}
+.maphold::after{content:"";position:absolute;top:0;right:0;width:52px;height:100%;pointer-events:none;
+  opacity:0;transition:opacity .15s ease;
+  background:linear-gradient(to right,rgba(247,248,246,0),var(--surface-2))}
+.maphold[data-more="1"]::after{opacity:1}
+.maphint{display:none;font-size:var(--t-xs);color:var(--ink-3);margin-top:7px}
+.maphint[data-on="1"]{display:block}
+.map{position:relative;display:flex;gap:28px;padding:16px;min-width:max-content;align-items:flex-start}
+.mcol{display:grid;gap:14px;align-content:start;position:relative;z-index:1}
+.mnode{width:150px;background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:10px 11px;display:grid;gap:4px}
 .mnode .mt{font-size:var(--t-s);font-weight:600;line-height:1.3}
 .mnode .mv{font-size:var(--t-xs);color:var(--ink-2);line-height:1.4}
 .mnode.fin{border-color:var(--ready);background:var(--ready-soft)}
@@ -351,7 +338,8 @@ code{font-family:var(--mono);font-size:.9em;background:var(--inset);border-radiu
 
         <div>
           <div class="flab" style="margin-bottom:9px">The shape of it</div>
-          <div class="maphold"><div class="map" id="map"><svg class="msvg" id="msvg" aria-hidden="true"></svg></div></div>
+          <div class="maphold" id="maphold"><div class="map" id="map"><svg class="msvg" id="msvg" aria-hidden="true"></svg></div></div>
+          <div class="maphint" id="maphint">Scroll sideways to see the rest of the plan.</div>
         </div>
 
         <p class="aside">
@@ -1019,7 +1007,17 @@ code{font-family:var(--mono);font-size:.9em;background:var(--inset);border-radiu
           svg.appendChild(dot);
         });
       });
+      scrollState();
     });
+  }
+
+  /* show the fade + hint only while there is more plan off to the right */
+  function scrollState(){
+    var hold=$("#maphold"), hint=$("#maphint");
+    if(!hold) return;
+    var more = hold.scrollWidth - hold.clientWidth - hold.scrollLeft > 2;
+    hold.setAttribute("data-more", more?"1":"0");
+    hint.setAttribute("data-on", (hold.scrollWidth - hold.clientWidth > 2) ? "1":"0");
   }
 
   function renderChecks(r){
@@ -1170,6 +1168,7 @@ code{font-family:var(--mono);font-size:.9em;background:var(--inset);border-radiu
     var b=clone(BLANK); b.pieces[0].uid=++uidSeq; setState(b);
   });
   window.addEventListener("resize",function(){ update(); });
+  $("#maphold").addEventListener("scroll", scrollState, { passive:true });
 
   var saved=load();
   setState(saved||EXAMPLE);
