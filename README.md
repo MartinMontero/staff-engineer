@@ -56,8 +56,18 @@ npm run guardrail
 python3 scripts/verify_stopping_condition.py --sprint my-sprint
 ```
 
+Step 2 is the hard one, and everything downstream depends on getting it
+right. If you can't yet write that command, the
+[Sprint Setup Bench](https://martinmontero.github.io/staff-engineer/sprint-setup-bench.html)
+walks you to it in plain language — no code, nothing to install.
+
 ## Documentation
 
+- [**Sprint Setup Bench**](https://martinmontero.github.io/staff-engineer/sprint-setup-bench.html)
+  — an interactive worksheet, open it in a browser. Turns a vague goal
+  into a machine-checkable stopping condition, a task graph it checks
+  for loops, and the exact words to hand your agent. Use it before
+  `/sprint-init`. Source: [docs/sprint-setup-bench.html](docs/sprint-setup-bench.html)
 - [docs/NON-DEV-QUICKSTART.md](docs/NON-DEV-QUICKSTART.md) — start here
   if you don't code
 - [docs/STAFF-ENGINEER-PLAYBOOK.md](docs/STAFF-ENGINEER-PLAYBOOK.md) —
