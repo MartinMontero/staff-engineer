@@ -1,0 +1,1129 @@
+<title>Sprint Setup Bench</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+:root{
+  --paper:#EDEFF3;
+  --surface:#FFFFFF;
+  --surface-2:#F5F7FA;
+  --ink:#151A22;
+  --ink-2:#4E5A6B;
+  --ink-3:#78859A;
+  --rule:#D2D8E1;
+  --rule-2:#E3E8EF;
+  --accent:#2438B8;
+  --accent-soft:#E5E8FA;
+  --ready:#166A57;
+  --ready-soft:#DCEFE9;
+  --missing:#A02C25;
+  --missing-soft:#F8E3E1;
+  --shadow:0 1px 2px rgba(21,26,34,.06), 0 8px 24px -12px rgba(21,26,34,.18);
+  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --body:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  --step:clamp(15px,1.1vw,16.5px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E1219; --surface:#151A23; --surface-2:#1A212C;
+    --ink:#E6EAF1; --ink-2:#A3AFC0; --ink-3:#7B8799;
+    --rule:#2A3341; --rule-2:#222B37;
+    --accent:#8496FF; --accent-soft:#1D2440;
+    --ready:#54BC9E; --ready-soft:#122C27;
+    --missing:#E5756B; --missing-soft:#2E1917;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -14px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E1219; --surface:#151A23; --surface-2:#1A212C;
+  --ink:#E6EAF1; --ink-2:#A3AFC0; --ink-3:#7B8799;
+  --rule:#2A3341; --rule-2:#222B37;
+  --accent:#8496FF; --accent-soft:#1D2440;
+  --ready:#54BC9E; --ready-soft:#122C27;
+  --missing:#E5756B; --missing-soft:#2E1917;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -14px rgba(0,0,0,.6);
+}
+
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:var(--step);line-height:1.62;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:20px;padding-block:0 64px}
+h1,h2,h3,.ui{font-family:var(--display)}
+h1,h2,h3{text-wrap:balance;margin:0}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+
+.masthead{border-bottom:1px solid var(--rule);padding-block:34px 26px;display:grid;gap:14px}
+.eyebrow{font-family:var(--display);font-size:12.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);display:flex;flex-wrap:wrap;gap:9px;align-items:center}
+.eyebrow .dot{width:5px;height:5px;border-radius:50%;background:var(--accent)}
+.masthead h1{font-size:clamp(30px,4.4vw,46px);line-height:1.06;letter-spacing:-.022em;font-weight:700;max-width:18ch}
+.standfirst{max-width:62ch;color:var(--ink-2);font-size:calc(var(--step) + 1.5px)}
+.standfirst strong{color:var(--ink);font-weight:600}
+
+.layout{display:grid;grid-template-columns:230px minmax(0,1fr);gap:40px;align-items:start;padding-top:32px}
+@media (max-width:900px){.layout{grid-template-columns:minmax(0,1fr);gap:22px}}
+
+.rail{position:sticky;top:16px;display:grid;gap:16px}
+@media (max-width:900px){.rail{position:static}}
+.rail-title{font-family:var(--display);font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:2px;font-family:var(--display);font-size:14px}
+.steps li a{display:grid;grid-template-columns:16px 1fr;gap:10px;align-items:baseline;padding:7px 8px;border-radius:5px;text-decoration:none;color:var(--ink-2);border-left:2px solid transparent}
+.steps li a:hover{background:var(--surface-2);color:var(--ink)}
+.steps .tick{font-size:13px;color:var(--rule)}
+.steps li[data-state="done"] a{color:var(--ink);border-left-color:var(--ready)}
+.steps li[data-state="done"] .tick{color:var(--ready)}
+.steps li[data-state="open"] a{border-left-color:var(--rule)}
+
+.status{background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:14px;display:grid;gap:7px;box-shadow:var(--shadow)}
+.status[data-ready="1"]{border-color:var(--ready)}
+.status .sh{font-family:var(--display);font-size:16px;font-weight:700;letter-spacing:-.01em}
+.status[data-ready="1"] .sh{color:var(--ready)}
+.status[data-ready="0"] .sh{color:var(--missing)}
+.status .sn{font-size:14px;color:var(--ink-2);line-height:1.45}
+.rail-actions{display:flex;flex-wrap:wrap;gap:6px}
+
+.sections{display:grid;gap:30px;min-width:0}
+section.card{background:var(--surface);border:1px solid var(--rule);border-radius:7px;box-shadow:var(--shadow);overflow:hidden}
+.card-head{padding:18px 22px 15px;border-bottom:1px solid var(--rule-2);display:grid;gap:5px;background:linear-gradient(to bottom,var(--surface-2),var(--surface))}
+.card-head .kicker{font-family:var(--display);font-size:12px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.card-head h2{font-size:21px;letter-spacing:-.014em;font-weight:600}
+.card-head p{margin:3px 0 0;color:var(--ink-2);max-width:64ch;font-size:15px}
+.card-body{padding:20px 22px 22px;display:grid;gap:18px}
+
+.field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+label.f{display:grid;gap:5px;min-width:0}
+label.f > .lab{font-family:var(--display);font-size:13.5px;font-weight:600;color:var(--ink)}
+label.f > .hint{font-size:13.5px;color:var(--ink-3);line-height:1.4}
+input[type=text],textarea{font-family:var(--body);font-size:15px;background:var(--surface-2);color:var(--ink);border:1px solid var(--rule);border-radius:4px;padding:9px 11px;width:100%;min-width:0;line-height:1.5}
+textarea{resize:vertical}
+input[type=text]:focus,textarea:focus{border-color:var(--accent);background:var(--surface)}
+.derived{font-family:var(--mono);font-size:12px;color:var(--ink-3)}
+
+.btn{font-family:var(--display);font-size:13px;font-weight:600;background:var(--surface);color:var(--ink);border:1px solid var(--rule);border-radius:4px;padding:6px 12px;cursor:pointer;line-height:1.4}
+.btn:hover{border-color:var(--ink-3)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.primary{color:#0E1219}}
+:root[data-theme="dark"] .btn.primary{color:#0E1219}
+.btn.ghost{background:transparent}
+.btn.tiny{font-size:12px;padding:4px 9px}
+
+.doctrine{border-left:2px solid var(--accent);padding:2px 0 2px 16px;font-size:16.5px;max-width:58ch}
+.doctrine cite{display:block;margin-top:6px;font-style:normal;font-family:var(--display);font-size:12.5px;color:var(--ink-3)}
+
+.ways{display:grid;gap:8px}
+.way{text-align:left;border:1px solid var(--rule);background:var(--surface-2);border-radius:5px;padding:11px 13px;cursor:pointer;display:grid;gap:3px}
+.way:hover{border-color:var(--accent)}
+.way[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.way .wt{font-family:var(--display);font-size:14.5px;font-weight:600;color:var(--ink)}
+.way .wd{font-size:13.5px;color:var(--ink-2);line-height:1.45}
+
+.tests{display:grid;gap:8px}
+.test{display:grid;grid-template-columns:20px 1fr;gap:11px;align-items:start;border:1px solid var(--rule-2);border-radius:5px;padding:11px 13px;background:var(--surface-2);cursor:pointer}
+.test:hover{border-color:var(--rule)}
+.test input{margin:4px 0 0;width:15px;height:15px;accent-color:var(--accent)}
+.test .tt{font-family:var(--display);font-size:14.5px;font-weight:600}
+.test .td{font-size:13.5px;color:var(--ink-2);line-height:1.45}
+.test[data-on="1"]{border-color:var(--ready);background:var(--ready-soft)}
+
+.pieces{display:grid;gap:10px}
+.piece{border:1px solid var(--rule);border-radius:6px;background:var(--surface-2);padding:13px;display:grid;gap:11px}
+.piece-top{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:end}
+.after{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.after .alab{font-family:var(--display);font-size:13.5px;font-weight:600;color:var(--ink);margin-right:3px}
+.chip{font-family:var(--display);font-size:13px;border:1px solid var(--rule);background:var(--surface);color:var(--ink-2);border-radius:100px;padding:4px 11px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--ink)}
+.chip.none{cursor:default;opacity:.75;border-style:dashed}
+
+.map-wrap{border:1px solid var(--rule-2);border-radius:6px;background:var(--surface-2);overflow-x:auto}
+.map{position:relative;display:flex;gap:52px;padding:18px 20px;min-width:max-content;align-items:flex-start}
+.map-col{display:grid;gap:14px;align-content:start;position:relative;z-index:1}
+.map-node{width:184px;background:var(--surface);border:1px solid var(--rule);border-radius:5px;padding:10px 11px;display:grid;gap:3px}
+.map-node .mn{font-family:var(--display);font-size:14px;font-weight:600;line-height:1.3}
+.map-node .mk{font-size:12.5px;color:var(--ink-3);line-height:1.4}
+.map-node.last{border-color:var(--ready);border-width:1.5px;background:var(--ready-soft)}
+.map-node .flag{font-family:var(--display);font-size:11.5px;font-weight:600;color:var(--ready)}
+.map-svg{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:visible}
+.map-empty{padding:22px;font-size:14px;color:var(--ink-3)}
+.map-empty.bad{color:var(--missing)}
+
+.list{list-style:none;margin:0;padding:0;border:1px solid var(--rule-2);border-radius:6px;overflow:hidden}
+.list li{display:grid;grid-template-columns:20px minmax(0,1fr);gap:12px;padding:11px 14px;border-bottom:1px solid var(--rule-2);align-items:baseline;font-size:14.5px}
+.list li:last-child{border-bottom:none}
+.list li[data-ok="1"]{background:var(--surface);color:var(--ink-2)}
+.list li[data-ok="0"]{background:var(--missing-soft);color:var(--ink)}
+.list .mark{font-family:var(--display);font-weight:700;font-size:14px}
+.list li[data-ok="1"] .mark{color:var(--ready)}
+.list li[data-ok="0"] .mark{color:var(--missing)}
+
+.packet{display:grid;gap:16px}
+.packet[data-locked="1"] .block{opacity:.4;filter:saturate(.35)}
+.lockbar{border:1px dashed var(--missing);background:var(--missing-soft);border-radius:6px;padding:12px 15px}
+.lockbar .lt{font-family:var(--display);font-size:15px;font-weight:700;color:var(--missing)}
+.lockbar .ld{font-size:14.5px;margin-top:3px;line-height:1.5}
+.block{border:1px solid var(--rule);border-radius:6px;overflow:hidden;background:var(--surface-2)}
+.block-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:9px 13px;border-bottom:1px solid var(--rule-2);background:var(--surface)}
+.block-name{font-family:var(--display);font-size:14px;font-weight:600}
+.block-note{font-size:13px;color:var(--ink-3);font-weight:400}
+.block-say{padding:13px 15px;font-size:15px;line-height:1.6}
+.block-say .said{display:block;padding:10px 12px;margin-top:8px;background:var(--surface);border:1px solid var(--rule-2);border-radius:4px;font-family:var(--mono);font-size:13px;line-height:1.55;white-space:pre-wrap}
+pre{margin:0;padding:13px 15px;overflow-x:auto;font-family:var(--mono);font-size:13px;line-height:1.55;color:var(--ink);white-space:pre}
+.tagline{display:inline-block;font-family:var(--display);font-size:12px;font-weight:600;padding:2px 9px;border-radius:100px;border:1px solid var(--rule)}
+.tagline.good{color:var(--ready);border-color:var(--ready);background:var(--ready-soft)}
+.tagline.hand{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+
+.note{font-size:14.5px;color:var(--ink-2);border-top:1px solid var(--rule-2);padding-top:15px;max-width:66ch}
+.note b{color:var(--ink);font-weight:600}
+code{font-family:var(--mono);font-size:.88em;background:var(--surface-2);border:1px solid var(--rule-2);border-radius:3px;padding:1px 5px}
+.foot{margin-top:42px;padding-top:20px;border-top:1px solid var(--rule);display:grid;gap:8px;color:var(--ink-3);font-size:14px;max-width:76ch}
+.foot a{color:var(--ink-2)}
+.example-flag{font-family:var(--display);font-size:12px;font-weight:600;color:var(--accent);background:var(--accent-soft);border:1px solid var(--accent);border-radius:100px;padding:1px 10px}
+.example-flag[hidden]{display:none!important}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="eyebrow"><span class="dot" aria-hidden="true"></span><span>Staff Engineer</span></div>
+    <h1>Decide what "done" means before anyone starts building</h1>
+    <p class="standfirst">
+      Staff Engineer runs AI agents through checkpoints they can't skip, and refuses to close
+      work without proof. None of that helps if the goal is fuzzy — agents will happily declare
+      a fuzzy goal met. So the system won't start until a person has done the part no agent can
+      do: said what will be true when it's finished, and how anyone could <strong>check</strong>
+      that it's true. This page walks you through that, then hands you the exact words to give
+      your agent. You don't write code here, and you don't need to read any.
+    </p>
+  </header>
+
+  <div class="layout">
+
+    <aside class="rail">
+      <div>
+        <div class="rail-title">Four decisions</div>
+        <ol class="steps" id="steps">
+          <li data-step="1"><a href="#s1"><span class="tick">○</span><span>The work</span></a></li>
+          <li data-step="2"><a href="#s2"><span class="tick">○</span><span>The check</span></a></li>
+          <li data-step="3"><a href="#s3"><span class="tick">○</span><span>The pieces</span></a></li>
+          <li data-step="4"><a href="#s4"><span class="tick">○</span><span>What to say next</span></a></li>
+        </ol>
+      </div>
+
+      <div class="status" id="status" data-ready="0">
+        <div class="sh" id="statusHead">Not ready yet</div>
+        <div class="sn" id="statusNote">Some decisions are still open.</div>
+      </div>
+
+      <div class="rail-actions">
+        <button class="btn tiny" id="btnExample" type="button">Show an example</button>
+        <button class="btn tiny ghost" id="btnClear" type="button">Start blank</button>
+      </div>
+      <div class="rail-title" id="saveState">Kept in this browser</div>
+    </aside>
+
+    <div class="sections">
+
+      <!-- 1 -->
+      <section class="card" id="s1">
+        <div class="card-head">
+          <div class="kicker"><span>One</span><span>The work</span><span class="example-flag" id="flag1" hidden>example</span></div>
+          <h2>What are you building, and what will be true when it's finished?</h2>
+          <p>One piece of work, one finish line. If it takes two sentences to describe, it's two pieces of work — do the first one.</p>
+        </div>
+        <div class="card-body">
+          <div class="field-grid">
+            <label class="f" for="f-project">
+              <span class="lab">What's the project called?</span>
+              <input type="text" id="f-project" autocomplete="off">
+            </label>
+            <label class="f" for="f-label">
+              <span class="lab">What do you call this piece of work?</span>
+              <input type="text" id="f-label" autocomplete="off">
+              <span class="hint" id="slugHint">A few plain words.</span>
+            </label>
+            <label class="f" for="f-owner">
+              <span class="lab">Who signs it off?</span>
+              <input type="text" id="f-owner" autocomplete="off">
+              <span class="hint">One named person. Nothing closes without them.</span>
+            </label>
+          </div>
+          <label class="f" for="f-goal">
+            <span class="lab">When this is finished, what will be true that isn't true today?</span>
+            <textarea id="f-goal" rows="2"></textarea>
+            <span class="hint">Write it as something a stranger could look at and agree has happened — not as work you plan to do.</span>
+          </label>
+        </div>
+      </section>
+
+      <!-- 2 -->
+      <section class="card" id="s2">
+        <div class="card-head">
+          <div class="kicker"><span>Two</span><span>The check</span></div>
+          <h2>How would you check it yourself?</h2>
+          <p>Not how a computer would check it — how <em>you</em> would, if you had to satisfy yourself it was really done. Everything else follows from this answer.</p>
+        </div>
+        <div class="card-body">
+
+          <blockquote class="doctrine">
+            "If you cannot write the command, you do not yet know what you are building. Stop and
+            define the goal before planning."
+            <cite>Staff Engineer, on the stopping condition</cite>
+          </blockquote>
+
+          <p style="margin:0;color:var(--ink-2);max-width:64ch">
+            That's the system's rule, and it sounds like it's asking you to write code. It isn't.
+            It's asking whether you can describe a check precisely enough that there's nothing left
+            to argue about. Do that here, in your own words, and your agent turns it into the command.
+          </p>
+
+          <div>
+            <div class="lab" style="font-family:var(--display);font-size:13.5px;font-weight:600;margin-bottom:8px">If you were checking this by hand, what would you actually do?</div>
+            <div class="ways" id="ways"></div>
+          </div>
+
+          <div id="wayFields" class="field-grid"></div>
+
+          <label class="f" for="f-check">
+            <span class="lab">Say it as you'd say it to a careful friend doing the check for you</span>
+            <textarea id="f-check" rows="3"></textarea>
+            <span class="hint">Be exact about what they'd look at and what would count as a pass. Vagueness here becomes an agent's judgment call later.</span>
+          </label>
+
+          <div class="tests" id="tests"></div>
+        </div>
+      </section>
+
+      <!-- 3 -->
+      <section class="card" id="s3">
+        <div class="card-head">
+          <div class="kicker"><span>Three</span><span>The pieces</span></div>
+          <h2>What has to be built, and in what order?</h2>
+          <p>Your agent will come back with a plan and ask you to approve it. Approving a plan you have no opinion about is rubber-stamping. Sketch your own expectation first — rough is fine, it's a yardstick, not an instruction.</p>
+        </div>
+        <div class="card-body">
+          <div class="pieces" id="pieces"></div>
+          <div><button class="btn" id="btnAdd" type="button">Add a piece</button></div>
+
+          <div>
+            <div class="lab" style="font-family:var(--display);font-size:13.5px;font-weight:600;margin-bottom:8px">The shape of it</div>
+            <div class="map-wrap"><div class="map" id="map"><svg class="map-svg" id="mapSvg" aria-hidden="true"></svg></div></div>
+          </div>
+
+          <p class="note" style="border-top:none;padding-top:0">
+            <b>It has to come to a point.</b> Work flows one way — nothing can wait on something
+            that's waiting on it. And every line has to end at the same last piece: the one that,
+            once finished, makes your check pass. Two separate endings means you've described two
+            pieces of work, not one.
+          </p>
+        </div>
+      </section>
+
+      <!-- 4 -->
+      <section class="card" id="s4">
+        <div class="card-head">
+          <div class="kicker"><span>Four</span><span>What to say next</span></div>
+          <h2>Where you stand</h2>
+          <p>The system refuses to move on missing pieces rather than guessing at them. Same here — this is that refusal, moved earlier, where it's cheap. Each numbered line below is something to say to an agent that has this repository open — not a button on this page.</p>
+        </div>
+        <div class="card-body">
+          <ul class="list" id="checklist"></ul>
+
+          <div class="packet" id="packet" data-locked="1">
+            <div class="lockbar" id="lockbar">
+              <div class="lt">Not ready yet</div>
+              <div class="ld">The wording below stays covered until the decisions above are made. Handing an agent a half-decided goal is how you end up approving something you didn't want.</div>
+            </div>
+
+            <div class="block">
+              <div class="block-head">
+                <span class="block-name">1 &nbsp;Start the work<span class="block-note"> — type this to your agent</span></span>
+                <button class="btn tiny" type="button" data-copy="say-1">Copy</button>
+              </div>
+              <div class="block-say">
+                Sets up a folder for this piece of work and puts the empty forms in it.
+                <span class="said" id="say-1"></span>
+              </div>
+            </div>
+
+            <div class="block">
+              <div class="block-head">
+                <span class="block-name">2 &nbsp;Hand over the check</span>
+                <span class="tagline" id="checkTag">ready as written</span>
+              </div>
+              <div class="block-say">
+                <span id="checkLead"></span>
+                <span class="said" id="say-2"></span>
+                <div style="margin-top:10px"><button class="btn tiny" type="button" data-copy="say-2">Copy</button></div>
+              </div>
+            </div>
+
+            <div class="block">
+              <div class="block-head">
+                <span class="block-name">3 &nbsp;Ask for a plan, then judge it</span>
+                <button class="btn tiny" type="button" data-copy="say-3">Copy</button>
+              </div>
+              <div class="block-say">
+                Your agent proposes three plans and recommends one. These are your notes to hold
+                the recommendation against — read it looking for what's missing, not for what sounds right.
+                <span class="said" id="say-3"></span>
+              </div>
+            </div>
+
+            <div class="block">
+              <div class="block-head">
+                <span class="block-name">4 &nbsp;Sign it off, at the end</span>
+                <button class="btn tiny" type="button" data-copy="say-4">Copy</button>
+              </div>
+              <div class="block-say">
+                When the work comes back, two short reports are waiting. Read them, then close it
+                in your own words — this line is the only thing that can close it, and only you can type it.
+                <span class="said" id="say-4"></span>
+              </div>
+            </div>
+
+            <div class="block">
+              <div class="block-head">
+                <span class="block-name">If something comes back failed</span>
+              </div>
+              <div class="block-say" id="sayFailBox">
+                <span class="said" id="say-fail"></span>
+              </div>
+            </div>
+
+            <div class="block">
+              <div class="block-head">
+                <span class="block-name">Your notes, kept together</span>
+                <button class="btn tiny" type="button" data-copy="notes">Copy</button>
+              </div>
+              <pre id="notes"></pre>
+            </div>
+
+            <div><button class="btn primary" type="button" data-copy="all">Copy all of it</button></div>
+
+            <details class="block" id="rawFiles">
+              <summary style="cursor:pointer;padding:11px 13px;font-family:var(--display);font-size:14px;font-weight:600;background:var(--surface);border-bottom:1px solid var(--rule-2)">
+                Optional — the three files themselves, if you're handing this to an agent that reads files directly
+              </summary>
+              <div style="padding:13px 15px;display:grid;gap:14px">
+                <p style="margin:0;font-size:14px;color:var(--ink-2)">
+                  Most people don't need this — the four lines above already tell your agent what to
+                  write. Use this only if you'd rather place the files yourself, or hand them to a
+                  colleague, inside <code>sprints/<span id="rfId"></span>/</code>.
+                </p>
+                <div class="block">
+                  <div class="block-head">
+                    <span class="block-name">sprint.md</span>
+                    <button class="btn tiny" type="button" data-copy="file-sprint">Copy</button>
+                  </div>
+                  <pre id="file-sprint"></pre>
+                </div>
+                <div class="block">
+                  <div class="block-head">
+                    <span class="block-name">stopping-condition.md</span>
+                    <button class="btn tiny" type="button" data-copy="file-sc">Copy</button>
+                  </div>
+                  <pre id="file-sc"></pre>
+                </div>
+                <div class="block">
+                  <div class="block-head">
+                    <span class="block-name">graph.yaml <span class="block-note">— your draft, not the Architect's</span></span>
+                    <button class="btn tiny" type="button" data-copy="file-graph">Copy</button>
+                  </div>
+                  <pre id="file-graph"></pre>
+                </div>
+              </div>
+            </details>
+          </div>
+
+          <p class="note">
+            <b>One thing to do before you approve any plan.</b> Ask your agent to run the check
+            once, now, before building anything. It should fail. A check that already passes
+            before the work exists isn't testing your goal — it's testing something that was
+            already true, and it will wave the finished work through without looking.
+          </p>
+        </div>
+      </section>
+
+      <footer class="foot">
+        <div>
+          Built on <a href="https://github.com/MartinMontero/staff-engineer">Staff Engineer</a>,
+          which is free to use and change. The system there brings together Sam Chan's idea that a
+          plan needs an order and a finish line you can test, and Chris Hobbs' rule that only a
+          named human can close work, in their own words.
+        </div>
+        <div>Nothing you type here leaves your browser.</div>
+      </footer>
+
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var KEY = "staff-engineer-bench-v2";
+
+  /* Each way of checking either yields a finished command, or a written brief
+     the agent has to turn into one. Never pretend to the second case. */
+  var WAYS = [
+    { id:"page", t:"I'd open a page and look for something specific",
+      d:"A page loads and a particular word, price, name or number is on it.",
+      fields:[{k:"where",l:"Address of the page",ph:"https://example.com/booking"},
+              {k:"what", l:"What must appear on it",ph:"Book a table"}],
+      build:function(v){ return v.where && v.what ? 'curl -sf "' + v.where + '" | grep -q "' + v.what + '"' : ""; } },
+
+    { id:"reply", t:"I'd send it something and see what comes back",
+      d:"A form, an address or a service answers when it's asked.",
+      fields:[{k:"where",l:"Address you'd send to",ph:"http://localhost:3000/health"}],
+      build:function(v){ return v.where ? 'curl -sf "' + v.where + '"' : ""; } },
+
+    { id:"file", t:"I'd check that a file was produced",
+      d:"Something gets exported, generated or saved where it belongs.",
+      fields:[{k:"where",l:"Where the file should be",ph:"exports/march-invoices.csv"}],
+      build:function(v){ return v.where ? 'test -f "' + v.where + '"' : ""; } },
+
+    { id:"through", t:"I'd click through it the way a person would",
+      d:"A few steps in order — sign up, get the email, click it, get in.",
+      fields:[], build:function(){ return ""; },
+      expect:"This usually becomes a script that clicks through the same steps a person would, end to end. It takes longer to build than the others — treat it as a real piece of work in its own right, not a quick add-on." },
+
+    { id:"records", t:"I'd check the records changed",
+      d:"A booking exists, a balance moved, a list has the right things in it.",
+      fields:[], build:function(){ return ""; },
+      expect:"This usually becomes a script that looks the record up directly and checks it against what you described. Be as exact as you can about which record and which values — that precision is what the agent has nothing else to go on." }
+  ];
+
+  var TESTS = [
+    { id:"failsNow", t:"Run it today and it fails.",
+      d:"Before anything is built, the check should say no. If it already says yes, it isn't watching your goal — and it will wave the finished work through." },
+    { id:"unattended", t:"It runs on its own.",
+      d:"Nobody sits and watches it. Nobody reads the result and decides what it meant." },
+    { id:"enough", t:"If it passes, you're satisfied.",
+      d:"Nothing else has to be true afterwards. If something does, that belongs in the check too." }
+  ];
+
+  var EXAMPLE = {
+    project:"Harbour Bistro site", label:"Table booking", owner:"",
+    goal:"Someone can book a table from the website, choose a time that is actually free, and get a confirmation email within a minute.",
+    way:"page", wayVals:{ where:"https://harbourbistro.ca/book", what:"Choose a time" },
+    check:"Open the booking page. Pick tomorrow at 7pm. If that slot is already taken it should not be offered. Book it under a test name, and within a minute a confirmation email arrives naming the date, the time and the party size.",
+    tests:{ failsNow:true, unattended:true, enough:true },
+    pieces:[
+      { uid:1, name:"Times that are actually free", does:"Work out which slots are open on a given night",
+        know:"Ask for a night we know is fully booked and get nothing back", deps:[] },
+      { uid:2, name:"The booking form",  does:"Let someone pick a night, a time and a party size",
+        know:"Fill it in and a booking appears against that night", deps:[1] },
+      { uid:3, name:"Confirmation email", does:"Send the confirmation once a booking is made",
+        know:"Make a test booking and the email arrives with the right details", deps:[2] },
+      { uid:4, name:"The whole run-through", does:"One pass from an empty page to the email landing",
+        know:"This is the check itself", deps:[3] }
+    ],
+    isExample:true
+  };
+
+  var BLANK = {
+    project:"", label:"", owner:"", goal:"", way:"", wayVals:{}, check:"",
+    tests:{failsNow:false,unattended:false,enough:false},
+    pieces:[{uid:1,name:"",does:"",know:"",deps:[]}],
+    isExample:false
+  };
+
+  var state=null, uidSeq=100;
+
+  function $(s){ return document.querySelector(s); }
+  function esc(s){ return String(s==null?"":s); }
+  function words(s){ return esc(s).trim().split(/\s+/).filter(Boolean).length; }
+  function clone(o){ return JSON.parse(JSON.stringify(o)); }
+  function slug(s){
+    return esc(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"")
+      .replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,40);
+  }
+  function today(){
+    var d=new Date();
+    return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  }
+  function sprintId(){ return slug(state.label) || "this-work"; }
+  function way(){ return WAYS.filter(function(w){ return w.id===state.way; })[0] || null; }
+  function builtCommand(){ var w=way(); return w ? esc(w.build(state.wayVals||{})).trim() : ""; }
+  function livePieces(){
+    return state.pieces.filter(function(p){ return esc(p.name).trim() || esc(p.does).trim() || esc(p.know).trim(); });
+  }
+
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+  function load(){
+    try{ var r=localStorage.getItem(KEY); if(!r) return null;
+      var o=JSON.parse(r); return (o && Array.isArray(o.pieces)) ? o : null; }catch(e){ return null; }
+  }
+
+  /* ---- order of work ---- */
+  function analyse(){
+    var ps = livePieces();
+    var named = ps.filter(function(p){ return esc(p.name).trim(); });
+    var described = ps.every(function(p){ return esc(p.name).trim() && esc(p.does).trim().length>3 && esc(p.know).trim().length>3; });
+
+    var out={}, byUid={};
+    named.forEach(function(p){ out[p.uid]=[]; byUid[p.uid]=p; });
+    named.forEach(function(p){
+      (p.deps||[]).forEach(function(u){ if(out[u]) out[u].push(p.uid); });
+    });
+
+    var colour={}, cyclePath=null;
+    function dfs(u,stack){
+      colour[u]=1; stack.push(u);
+      for(var i=0;i<out[u].length;i++){
+        var m=out[u][i];
+        if(colour[m]===1){ cyclePath=stack.slice(stack.indexOf(m)).concat([m]); return true; }
+        if(!colour[m] && dfs(m,stack)) return true;
+      }
+      colour[u]=2; stack.pop(); return false;
+    }
+    Object.keys(out).some(function(u){ return !colour[u] && dfs(Number(u),[]); });
+    var oneWay = !cyclePath;
+
+    var endings = Object.keys(out).filter(function(u){ return out[u].length===0; }).map(Number);
+    var last = endings.length===1 ? endings[0] : null;
+    var converges=false;
+    if(oneWay && last!==null){
+      converges = Object.keys(out).every(function(u){
+        u=Number(u); if(u===last) return true;
+        var seen={}, q=[u];
+        while(q.length){
+          var c=q.shift();
+          if(c===last) return true;
+          if(seen[c]) continue; seen[c]=1;
+          out[c].forEach(function(m){ q.push(m); });
+        }
+        return false;
+      });
+    }
+
+    var levels={};
+    if(oneWay){
+      named.forEach(function(p){ levels[p.uid]=0; });
+      var changed=true, guard=0;
+      while(changed && guard<200){
+        changed=false; guard++;
+        named.forEach(function(p){
+          var l=0;
+          (p.deps||[]).forEach(function(u){ if(levels.hasOwnProperty(u)) l=Math.max(l, levels[u]+1); });
+          if(levels[p.uid]!==l){ levels[p.uid]=l; changed=true; }
+        });
+      }
+    }
+
+    return { pieces:ps, named:named, described:described, oneWay:oneWay, cyclePath:cyclePath,
+             endings:endings, last:last, converges:converges, levels:levels, byUid:byUid };
+  }
+
+  function nameOf(uid){
+    var p = state.pieces.filter(function(x){ return x.uid===uid; })[0];
+    return p ? (esc(p.name).trim() || "unnamed") : "unnamed";
+  }
+
+  /* ---- readiness ---- */
+  function readiness(){
+    var g=analyse(), items=[];
+    var w=way();
+
+    items.push({ step:1, ok: esc(state.project).trim() && esc(state.label).trim(),
+      yes:"The project and this piece of work both have names.",
+      no:"Name the project, and give this piece of work a short name." });
+
+    items.push({ step:1, ok: !!esc(state.owner).trim(),
+      yes:esc(state.owner).trim()+" signs this off — nobody else can.",
+      no:"Say who signs it off. Somebody has to be accountable for closing it." });
+
+    items.push({ step:1, ok: words(state.goal)>=8,
+      yes:"You've said what will be true when it's finished.",
+      no:"The finish line is too thin to plan against — give it a full sentence." });
+
+    items.push({ step:2, ok: !!w,
+      yes:"You've said how you'd check it: "+(w?w.t.replace(/^I'd /,"").toLowerCase():""),
+      no:"Pick how you'd check this by hand." });
+
+    items.push({ step:2, ok: words(state.check)>=12,
+      yes:"The check is written out in enough detail to hand over.",
+      no:"Describe the check properly — what someone would look at, and what counts as a pass." });
+
+    var missTests = TESTS.filter(function(t){ return !state.tests[t.id]; });
+    items.push({ step:2, ok: missTests.length===0,
+      yes:"All three things are true of your check.",
+      no:"Still unconfirmed: "+missTests.map(function(t){ return t.t.replace(/\.$/,"").toLowerCase(); }).join("; ")+"." });
+
+    items.push({ step:3, ok: g.named.length>=2 && g.described,
+      yes:g.named.length+" pieces, each with a way of telling it's finished.",
+      no: g.named.length<2 ? "Break the work into at least two pieces."
+        : "Every piece needs both what it is and how you'd know it's finished." });
+
+    items.push({ step:3, ok: g.oneWay,
+      yes:"Work flows one way.",
+      no: g.cyclePath ? "These are waiting on each other: "+(g.cyclePath||[]).map(nameOf).join(" → ")+". One of them has to go first."
+        : "Work flows one way." });
+
+    items.push({ step:3, ok: g.oneWay && g.converges,
+      yes:"Everything ends at "+(g.last!==null?"“"+nameOf(g.last)+"”":"one last piece")+".",
+      no: g.endings.length>1 ? "Two separate endings ("+g.endings.map(nameOf).join(", ")+"). Say which one comes last, or split this in two."
+        : g.endings.length===0 ? "Nothing is last. Something has to finish the job."
+        : "Some pieces never lead anywhere. Connect them or drop them." });
+
+    return { items:items, graph:g, ready: items.every(function(i){ return i.ok; }) };
+  }
+
+  /* ---- what to say ---- */
+  function sayInit(){ return "/sprint-init " + sprintId(); }
+
+  function sayCheck(){
+    var cmd = builtCommand();
+    var id = sprintId();
+    if(cmd){
+      return "Open sprints/" + id + "/stopping-condition.md and make the bash block exactly this:\n\n"
+        + cmd + "\n\nThen run it once, now, before any work. It should fail. Tell me the result."
+        + " For context, the check in plain terms is: " + esc(state.check).trim();
+    }
+    return "Here is the check that decides whether this work is done:\n\n"
+      + esc(state.check).trim()
+      + "\n\nWrite that as a single command in sprints/" + id + "/stopping-condition.md — one bash block,"
+      + " passing only when the whole check passes, with nothing for a person to watch or interpret."
+      + " Then run it once, now, before any work. It should fail. Show me the command you wrote and the result.";
+  }
+
+  function sayPlan(){
+    var g=analyse();
+    var lines = ["/sprint-plan " + sprintId(), "",
+      "Before you propose anything, here is what I expect the work to be. Tell me plainly where your plan differs and why."];
+    g.named.forEach(function(p, i){
+      var deps=(p.deps||[]).map(nameOf);
+      lines.push((i+1) + ". " + esc(p.name).trim()
+        + " — " + esc(p.does).trim()
+        + ". Finished when: " + esc(p.know).trim()
+        + (deps.length ? ". Can't start until: " + deps.join(", ") : ". Can start straight away") + ".");
+    });
+    return lines.join("\n");
+  }
+
+  function sayClose(){
+    var name = esc(state.owner).trim();
+    var quote = name
+      ? name + " read both reports and accepts the result."
+      : "I read both reports and accept the result.";
+    return "/sprint-complete " + sprintId() + " --user-said \"" + quote + "\"";
+  }
+
+  function sayFail(){
+    return "If any step comes back and asks you to look at something that failed, that's the system working, not an error to work around."
+      + "\n\n- A plan you don't approve: it stays in planning and your agent tries again."
+      + "\n- A failed check on the work itself: it goes back for fixing, on its own — you don't need to do anything."
+      + "\n- A failed run of your actual check: same thing — it goes back and tries again."
+      + "\n- You read the reports and aren't satisfied: send it back yourself and say why. Only step 4 above closes it, and only when you mean it.";
+  }
+
+  function notesText(){
+    var g=analyse();
+    var out = [
+      state.project.trim() + " — " + state.label.trim(),
+      "Signed off by: " + esc(state.owner).trim(),
+      "Written: " + today(),
+      "",
+      "FINISHED WHEN",
+      esc(state.goal).trim(),
+      "",
+      "THE CHECK",
+      esc(state.check).trim()
+    ];
+    var cmd = builtCommand();
+    if(cmd){ out.push("", "As a command: " + cmd); }
+    else { out.push("", "Your agent turns this into the command."); }
+    out.push("", "THE PIECES");
+    g.named.forEach(function(p,i){
+      var deps=(p.deps||[]).map(nameOf);
+      out.push((i+1)+". "+esc(p.name).trim());
+      out.push("   What it is: "+esc(p.does).trim());
+      out.push("   Finished when: "+esc(p.know).trim());
+      out.push("   "+(deps.length ? "Can't start until: "+deps.join(", ") : "Can start straight away"));
+    });
+    return out.join("\n");
+  }
+
+  var FENCE = String.fromCharCode(96,96,96);
+
+  function pieceSlugs(){
+    var g=analyse(), used={}, map={};
+    g.named.forEach(function(p){
+      var base = slug(p.name) || ("task-" + p.uid), s = base, n = 2;
+      while(used[s]){ s = base + "-" + n; n++; }
+      used[s]=true; map[p.uid]=s;
+    });
+    return map;
+  }
+
+  function fileSprintMd(){
+    var id = sprintId();
+    return [
+      "# Sprint " + id, "",
+      "- **Owner:** " + (esc(state.owner).trim() || "Staff Engineer"),
+      "- **Created:** " + today(),
+      "- **Stopping condition:** see `stopping-condition.md`", "",
+      "## Summary", "",
+      esc(state.goal).trim(), "",
+      "## Notes", "",
+      "Project: " + esc(state.project).trim() + ".",
+      "The task list in `graph.yaml` is the staff engineer's own expectation, written before",
+      "planning — a yardstick for the Architect's three proposals, not an instruction.", ""
+    ].join("\n");
+  }
+
+  function fileStoppingConditionMd(){
+    var id = sprintId(), cmd = builtCommand();
+    var lines = ["# Stopping Condition", "", esc(state.goal).trim(), "",
+      "The check, in the staff engineer's own words:", "", esc(state.check).trim(), "",
+      "Live QA runs the command below verbatim from the repository root via",
+      "`python3 scripts/verify_stopping_condition.py --sprint " + id + "`.",
+      "Exit 0 is the verdict. Anything else sends the sprint back to Execution.", "",
+      FENCE + "bash"];
+    lines.push(cmd || "# the check above describes what to test; write the command that tests it");
+    lines.push(FENCE, "");
+    return lines.join("\n");
+  }
+
+  function fileGraphYaml(){
+    var id = sprintId(), g = analyse(), ids = pieceSlugs();
+    var lines = [
+      "# Candidate task graph, drafted by the staff engineer before /sprint-plan.",
+      "# The Architect will propose three of its own; hold them against this one.", "",
+      "sprint: " + id,
+      "stopping_condition: python3 scripts/verify_stopping_condition.py --sprint " + id,
+      "nodes:"
+    ];
+    g.named.forEach(function(p){
+      var deps = (p.deps||[]).map(function(u){ return ids[u]; }).filter(Boolean);
+      lines.push("  - id: " + ids[p.uid]);
+      lines.push("    does: " + JSON.stringify(esc(p.does).trim()));
+      lines.push("    verify: " + JSON.stringify(esc(p.know).trim()));
+      lines.push("    depends_on: [" + deps.join(", ") + "]");
+    });
+    lines.push("terminal: " + (g.last!==null ? ids[g.last] : "null"), "");
+    return lines.join("\n");
+  }
+
+  /* ---- render ---- */
+  function renderWays(){
+    var box=$("#ways"); box.innerHTML="";
+    WAYS.forEach(function(w){
+      var b=document.createElement("button");
+      b.type="button"; b.className="way";
+      b.setAttribute("aria-pressed", state.way===w.id ? "true":"false");
+      b.innerHTML='<span class="wt"></span><span class="wd"></span>';
+      b.querySelector(".wt").textContent=w.t;
+      b.querySelector(".wd").textContent=w.d;
+      b.addEventListener("click",function(){
+        state.way=w.id; state.isExample=false;
+        renderWays(); renderWayFields(); update();
+      });
+      box.appendChild(b);
+    });
+  }
+
+  function renderWayFields(){
+    var box=$("#wayFields"); box.innerHTML="";
+    var w=way(); if(!w || !w.fields.length) return;
+    w.fields.forEach(function(f){
+      var lab=document.createElement("label");
+      lab.className="f"; lab.setAttribute("for","wf-"+f.k);
+      lab.innerHTML='<span class="lab"></span><input type="text" id="wf-'+f.k+'" autocomplete="off">';
+      lab.querySelector(".lab").textContent=f.l;
+      var input=lab.querySelector("input");
+      input.placeholder=f.ph;
+      input.value=esc((state.wayVals||{})[f.k]);
+      input.addEventListener("input",function(){
+        state.wayVals=state.wayVals||{}; state.wayVals[f.k]=input.value;
+        state.isExample=false; update();
+      });
+      box.appendChild(lab);
+    });
+  }
+
+  function renderTests(){
+    var box=$("#tests"); box.innerHTML="";
+    TESTS.forEach(function(t){
+      var lab=document.createElement("label");
+      lab.className="test"; lab.setAttribute("data-on", state.tests[t.id]?"1":"0");
+      lab.setAttribute("for","tst-"+t.id);
+      var i=document.createElement("input");
+      i.type="checkbox"; i.id="tst-"+t.id; i.checked=!!state.tests[t.id];
+      var s=document.createElement("span");
+      s.innerHTML='<span class="tt"></span><br><span class="td"></span>';
+      s.querySelector(".tt").textContent=t.t;
+      s.querySelector(".td").textContent=t.d;
+      i.addEventListener("change",function(){
+        state.tests[t.id]=i.checked; state.isExample=false; renderTests(); update();
+      });
+      lab.appendChild(i); lab.appendChild(s); box.appendChild(lab);
+    });
+  }
+
+  function renderPieces(){
+    var box=$("#pieces"); box.innerHTML="";
+    state.pieces.forEach(function(p,idx){
+      var card=document.createElement("div"); card.className="piece";
+
+      var top=document.createElement("div"); top.className="piece-top";
+      top.innerHTML='<label class="f"><span class="lab">Call it</span>'+
+        '<input type="text" id="p'+p.uid+'-name" autocomplete="off"></label>'+
+        '<button class="btn tiny ghost" type="button">Remove</button>';
+      var nameIn=top.querySelector("input");
+      nameIn.value=esc(p.name);
+      nameIn.addEventListener("input",function(){ p.name=nameIn.value; state.isExample=false; update(); renderAfter(); });
+      top.querySelector("button").addEventListener("click",function(){
+        state.pieces.splice(idx,1);
+        state.pieces.forEach(function(q){ q.deps=(q.deps||[]).filter(function(u){ return u!==p.uid; }); });
+        if(!state.pieces.length) state.pieces.push({uid:++uidSeq,name:"",does:"",know:"",deps:[]});
+        state.isExample=false; renderPieces(); update();
+      });
+
+      var d=document.createElement("label"); d.className="f";
+      d.innerHTML='<span class="lab">What is it?</span><input type="text" id="p'+p.uid+'-does" autocomplete="off">';
+      var dIn=d.querySelector("input"); dIn.value=esc(p.does);
+      dIn.addEventListener("input",function(){ p.does=dIn.value; state.isExample=false; update(); });
+
+      var k=document.createElement("label"); k.className="f";
+      k.innerHTML='<span class="lab">How would you know this piece is finished?</span><input type="text" id="p'+p.uid+'-know" autocomplete="off">';
+      var kIn=k.querySelector("input"); kIn.value=esc(p.know);
+      kIn.addEventListener("input",function(){ p.know=kIn.value; state.isExample=false; update(); });
+
+      var a=document.createElement("div"); a.className="after"; a.setAttribute("data-uid",String(p.uid));
+
+      card.appendChild(top); card.appendChild(d); card.appendChild(k); card.appendChild(a);
+      box.appendChild(card);
+    });
+    renderAfter();
+  }
+
+  function renderAfter(){
+    Array.prototype.forEach.call(document.querySelectorAll(".after"),function(box){
+      var uid=parseInt(box.getAttribute("data-uid"),10);
+      var p=state.pieces.filter(function(x){ return x.uid===uid; })[0];
+      if(!p) return;
+      box.innerHTML='<span class="alab">Can’t start until</span>';
+      var others=state.pieces.filter(function(x){ return x.uid!==uid && esc(x.name).trim(); });
+      if(!others.length){
+        var n=document.createElement("span"); n.className="chip none"; n.textContent="name the others first";
+        box.appendChild(n); return;
+      }
+      others.forEach(function(o){
+        var b=document.createElement("button");
+        b.type="button"; b.className="chip"; b.textContent=esc(o.name).trim();
+        b.setAttribute("aria-pressed",(p.deps||[]).indexOf(o.uid)!==-1?"true":"false");
+        b.addEventListener("click",function(){
+          p.deps=p.deps||[];
+          var i=p.deps.indexOf(o.uid);
+          if(i===-1) p.deps.push(o.uid); else p.deps.splice(i,1);
+          state.isExample=false; renderAfter(); update();
+        });
+        box.appendChild(b);
+      });
+    });
+  }
+
+  function renderMap(g){
+    var map=$("#map"), svg=$("#mapSvg");
+    Array.prototype.slice.call(map.querySelectorAll(".map-col,.map-empty")).forEach(function(e){ e.remove(); });
+    svg.innerHTML="";
+
+    if(!g.named.length){
+      var e=document.createElement("div"); e.className="map-empty";
+      e.textContent="Name your pieces and the shape of the work appears here.";
+      map.appendChild(e); return;
+    }
+    if(!g.oneWay){
+      var c=document.createElement("div"); c.className="map-empty bad";
+      c.textContent="These are waiting on each other: "+(g.cyclePath||[]).map(nameOf).join(" → ")+". Nothing can start.";
+      map.appendChild(c); return;
+    }
+
+    var cols={};
+    g.named.forEach(function(p){ var l=g.levels[p.uid]||0; (cols[l]=cols[l]||[]).push(p); });
+    var keys=Object.keys(cols).map(Number).sort(function(a,b){ return a-b; });
+    var el={};
+    keys.forEach(function(l){
+      var col=document.createElement("div"); col.className="map-col";
+      cols[l].forEach(function(p){
+        var d=document.createElement("div");
+        d.className="map-node"+(p.uid===g.last?" last":"");
+        d.innerHTML='<span class="mn"></span><span class="mk"></span>'+(p.uid===g.last?'<span class="flag">your check passes here</span>':"");
+        d.querySelector(".mn").textContent=esc(p.name).trim();
+        d.querySelector(".mk").textContent=esc(p.know).trim() || "no finish test yet";
+        col.appendChild(d); el[p.uid]=d;
+      });
+      map.appendChild(col);
+    });
+
+    requestAnimationFrame(function(){
+      var base=map.getBoundingClientRect();
+      var w=map.scrollWidth, h=map.scrollHeight;
+      svg.setAttribute("viewBox","0 0 "+w+" "+h);
+      svg.setAttribute("width",w); svg.setAttribute("height",h);
+      svg.style.width=w+"px"; svg.style.height=h+"px";
+      var stroke=getComputedStyle(document.documentElement).getPropertyValue("--ink-3").trim()||"#888";
+      g.named.forEach(function(p){
+        var to=el[p.uid];
+        (p.deps||[]).forEach(function(u){
+          var from=el[u]; if(!from||!to) return;
+          var a=from.getBoundingClientRect(), b=to.getBoundingClientRect();
+          var x1=a.right-base.left+map.scrollLeft, y1=a.top-base.top+a.height/2+map.scrollTop;
+          var x2=b.left-base.left+map.scrollLeft,  y2=b.top-base.top+b.height/2+map.scrollTop;
+          var dx=Math.max(22,(x2-x1)*0.5);
+          var path=document.createElementNS("http://www.w3.org/2000/svg","path");
+          path.setAttribute("d","M"+x1+","+y1+" C"+(x1+dx)+","+y1+" "+(x2-dx)+","+y2+" "+x2+","+y2);
+          path.setAttribute("fill","none"); path.setAttribute("stroke",stroke);
+          path.setAttribute("stroke-width","1.4"); path.setAttribute("opacity",".65");
+          svg.appendChild(path);
+          var dot=document.createElementNS("http://www.w3.org/2000/svg","circle");
+          dot.setAttribute("cx",String(x2)); dot.setAttribute("cy",String(y2)); dot.setAttribute("r","2.6");
+          dot.setAttribute("fill",stroke); svg.appendChild(dot);
+        });
+      });
+    });
+  }
+
+  function renderChecklist(r){
+    var ul=$("#checklist"); ul.innerHTML="";
+    r.items.forEach(function(it){
+      var li=document.createElement("li");
+      li.setAttribute("data-ok", it.ok?"1":"0");
+      var m=document.createElement("span"); m.className="mark"; m.textContent=it.ok?"✓":"—";
+      var t=document.createElement("span"); t.textContent=it.ok?it.yes:it.no;
+      li.appendChild(m); li.appendChild(t); ul.appendChild(li);
+    });
+  }
+
+  function renderSteps(r){
+    var by={1:[],2:[],3:[]};
+    r.items.forEach(function(i){ by[i.step].push(i.ok); });
+    Array.prototype.forEach.call(document.querySelectorAll("#steps li"),function(li){
+      var s=parseInt(li.getAttribute("data-step"),10);
+      var done = s===4 ? r.ready : (by[s].length && by[s].every(Boolean));
+      li.setAttribute("data-state", done?"done":"open");
+      li.querySelector(".tick").textContent = done ? "✓" : "○";
+    });
+  }
+
+  function update(){
+    var r=readiness();
+
+    $("#slugHint").textContent = esc(state.label).trim()
+      ? "Your work will live in a folder called " + sprintId() + "."
+      : "A few plain words.";
+
+    var st=$("#status");
+    st.setAttribute("data-ready", r.ready?"1":"0");
+    var open=r.items.filter(function(i){ return !i.ok; }).length;
+    $("#statusHead").textContent = r.ready ? "Ready to hand over" : "Not ready yet";
+    $("#statusNote").textContent = r.ready
+      ? "Every decision is made. The wording is at the bottom of the page."
+      : open + (open===1 ? " decision is still open." : " decisions are still open.");
+
+    renderChecklist(r); renderSteps(r); renderMap(r.graph);
+
+    $("#packet").setAttribute("data-locked", r.ready?"0":"1");
+    $("#lockbar").hidden = r.ready;
+
+    var cmd=builtCommand(), w=way();
+    $("#checkTag").textContent = cmd ? "ready as written" : "your agent writes the command";
+    $("#checkTag").className = "tagline " + (cmd ? "good" : "hand");
+    var lead = cmd
+      ? "You gave enough for the exact command. This tells your agent to use it and to prove it fails today."
+      : "This kind of check can’t be written from what you’ve told the page — it needs to know your project. So hand over the check itself and make the agent show you what it wrote.";
+    if(!cmd && w && w.expect) lead += " " + w.expect;
+    $("#checkLead").textContent = lead;
+
+    $("#say-1").textContent = sayInit();
+    $("#say-2").textContent = sayCheck();
+    $("#say-3").textContent = sayPlan();
+    $("#say-4").textContent = sayClose();
+    $("#say-fail").textContent = sayFail();
+    $("#notes").textContent = notesText();
+
+    $("#rfId").textContent = sprintId();
+    $("#file-sprint").textContent = fileSprintMd();
+    $("#file-sc").textContent = fileStoppingConditionMd();
+    $("#file-graph").textContent = fileGraphYaml();
+
+    $("#flag1").hidden = !state.isExample;
+    save();
+  }
+
+  /* ---- copy ---- */
+  function copyText(text,btn){
+    var done=function(){ var o=btn.textContent; btn.textContent="Copied"; setTimeout(function(){ btn.textContent=o; },1400); };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done,function(){ fallback(text,done); });
+    } else fallback(text,done);
+  }
+  function fallback(text,done){
+    try{
+      var ta=document.createElement("textarea");
+      ta.value=text; ta.setAttribute("readonly","");
+      ta.style.position="fixed"; ta.style.top="-1000px";
+      document.body.appendChild(ta); ta.select();
+      document.execCommand("copy"); document.body.removeChild(ta); done();
+    }catch(e){}
+  }
+
+  document.addEventListener("click",function(ev){
+    var btn=ev.target.closest("[data-copy]"); if(!btn) return;
+    if($("#packet").getAttribute("data-locked")==="1"){
+      var o=btn.textContent; btn.textContent="Not ready";
+      setTimeout(function(){ btn.textContent=o; },1500); return;
+    }
+    var t=btn.getAttribute("data-copy"), text;
+    if(t==="all"){
+      text=[ "1. START THE WORK","",sayInit(),"",
+             "2. HAND OVER THE CHECK","",sayCheck(),"",
+             "3. ASK FOR A PLAN","",sayPlan(),"",
+             "4. SIGN IT OFF, AT THE END","",sayClose(),"",
+             "IF SOMETHING FAILS ALONG THE WAY","",sayFail(),"",
+             "— — —","",notesText() ].join("\n");
+    } else text=document.getElementById(t).textContent;
+    copyText(text,btn);
+  });
+
+  /* ---- wiring ---- */
+  function bind(sel,key){
+    var el=$(sel);
+    el.addEventListener("input",function(){ state[key]=el.value; state.isExample=false; update(); });
+  }
+  bind("#f-project","project"); bind("#f-label","label");
+  bind("#f-owner","owner"); bind("#f-goal","goal"); bind("#f-check","check");
+
+  $("#btnAdd").addEventListener("click",function(){
+    state.pieces.push({uid:++uidSeq,name:"",does:"",know:"",deps:[]});
+    state.isExample=false; renderPieces(); update();
+  });
+
+  function paint(){
+    $("#f-project").value=esc(state.project);
+    $("#f-label").value=esc(state.label);
+    $("#f-owner").value=esc(state.owner);
+    $("#f-goal").value=esc(state.goal);
+    $("#f-check").value=esc(state.check);
+    renderWays(); renderWayFields(); renderTests(); renderPieces(); update();
+  }
+  function setState(next){
+    state=clone(next);
+    state.wayVals=state.wayVals||{};
+    uidSeq=state.pieces.reduce(function(m,p){ return Math.max(m,p.uid||0); },100);
+    paint();
+  }
+
+  $("#btnExample").addEventListener("click",function(){ setState(EXAMPLE); });
+  $("#btnClear").addEventListener("click",function(){
+    var b=clone(BLANK); b.pieces[0].uid=++uidSeq; setState(b);
+  });
+  window.addEventListener("resize",function(){ update(); });
+
+  var saved=load();
+  setState(saved||EXAMPLE);
+  try{ $("#saveState").textContent = saved ? "Restored from this browser" : "Kept in this browser"; }catch(e){}
+})();
+</script>
